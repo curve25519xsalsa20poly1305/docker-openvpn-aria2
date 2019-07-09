@@ -1,6 +1,7 @@
 FROM curve25519xsalsa20poly1305/openvpn-socks5:latest
 
 COPY aria2.patch /aria2-master/
+COPY aria2-entrypoint.sh /usr/local/bin/
 
 RUN apk add --no-cache --virtual .build-deps \
     	build-base autoconf automake libtool gettext-dev git \
@@ -22,4 +23,8 @@ RUN apk add --no-cache --virtual .build-deps \
     && cd / \
     && rm -rf /aria2-master \
     && apk del .build-deps \
-    && apk add --no-cache libgcc libstdc++ gnutls expat sqlite-libs c-ares
+    && apk add --no-cache libgcc libstdc++ gnutls expat sqlite-libs c-ares \
+    && chmod +x /usr/local/bin/aria2-entrypoint.sh
+
+ENV ARIA2_UP    ""
+ENV SOCKS5_UP   /usr/local/bin/aria2-entrypoint.sh
